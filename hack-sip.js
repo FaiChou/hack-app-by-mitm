@@ -17,22 +17,13 @@ const PIN_MAP = {
 
 const rule = {
   summary: 'Hack Sip!',
-  *beforeDealHttpsRequest({ host, _req }) {
-    console.log('😅 deal with ', host)
+  *beforeDealHttpsRequest({ host }) {
     if (host.includes('api.sipapp.io')) {
-      console.log('🤪 sipapp:', _req.httpVersion, _req.method)
-      return true
-    }
-    if (host.includes('restapi')) {
-      return true
-    }
-    if (host.includes('in.appcenter.ms')) {
       return true
     }
     return false
   },
   *beforeSendRequest({ url, requestData }) {
-    console.log('🙃 beforeSendRequest', url)
     if (url === SIP_URL) {
       const { pin, id } = JSON.parse(requestData)
       const match = pin.toString().split().reduce((num, str) => str+PIN_MAP[num])
@@ -59,55 +50,7 @@ const rule = {
         }
       }
     }
-    if (url.includes('in.appcenter.ms/logs?api-version')) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            response: {
-              body: '123',
-              statusCode: 200,
-              header: { 'content-type': 'text/html' }
-            }
-          })
-        }, 5000);
-      })
-    }
-  },
-  *beforeSendResponse({ url, requestData }) {
-    console.log('😋 beforeSendResponse', url)
-    if (url === SIP_URL) {
-      const { pin, id } = JSON.parse(requestData)
-      const match = pin.toString().split().reduce((num, str) => str+PIN_MAP[num])
-      const body = JSON.stringify({
-        build: 200,
-        environment: 'production',
-        match,
-        status: 200,
-        success: true,
-        trial: {
-          id,
-          days: 15,
-          remaining: 15,
-          date: '2020-02-23',
-          name: 'FaiChou-MBP'
-        },
-        version: '2.0'
-      })
-      return {
-        response: {
-          body,
-          statusCode: 200,
-          header: { 'content-type': 'application/json' }
-        }
-      }
-    }
-  },
-  *onError({ url }, error) {
-    console.log('[onError]:', url, error)
-  },
-  *onConnectError({ url }, error) {
-    console.log('[onConnectError]:', url, error)
-  },
+  }
 }
 
 const OPTIONS = {
@@ -127,7 +70,7 @@ server.on('error', e => {
 
 function start() {
   if (!AnyProxy.utils.certMgr.ifRootCAFileExists()) {
-    console.log('😡 未发现证书')
+    console.log('😡 CA not found')
     return
   }
   server.start()

@@ -1,0 +1,11 @@
+{
+  "name": "hack-sip",
+  "version": "1.0.0",
+  "description": "Hack Sip!",
+  "main": "hack-sip.js",
+  "author": "FaiChou",
+  "license": "MIT",
+  "dependencies": {
+    "anyproxy": "^4.1.2"
+  }
+}

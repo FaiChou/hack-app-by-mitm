@@ -32,4 +32,10 @@ $ brew install mitmproxy
 $ mitmproxy -s hack-sip.py
 ```
 
+Or just using script:
+
+```shell
+$ hack_sip
+```
+
 Enjoy!

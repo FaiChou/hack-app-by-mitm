@@ -1,0 +1,17 @@
+#!/bin/bash
+
+PROXY_PORT=8888
+
+echo "😁 Set proxy to localhost:$PROXY_PORT"
+networksetup -setwebproxy Wi-Fi 127.0.0.1 $PROXY_PORT && networksetup -setproxybypassdomains Wi-Fi 127.0.0.1 localhost
+networksetup -setsecurewebproxy Wi-Fi 127.0.0.1 $PROXY_PORT && networksetup -setproxybypassdomains Wi-Fi 127.0.0.1 localhos
+
+cleanup() {
+  networksetup -setwebproxystate Wi-fi off
+  networksetup -setsecurewebproxystate Wi-Fi off
+  echo "😀 Exit with code $?"
+  exit $?
+}
+trap cleanup 1 2 3 6
+
+mitmproxy -p $PROXY_PORT -s ./hack-sip.py
